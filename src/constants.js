@@ -25,11 +25,14 @@ const ServerMessageType = {
 const PeerEventType = {
   Open: 'open',
   Close: 'close',
-  Connection: 'connection',
-  Call: 'call',
+  // Connection: 'connection',
+  // Call: 'call',
   Disconnected: 'disconnected',
   Error: 'error',
   Signal: 'signal',
+  Message: 'message',
+  UnknownMessage: 'unknown-message',
+  Leave: 'leave',
 };
 
 const PeerErrorType = {
@@ -51,7 +54,6 @@ module.exports = {
   CloudHost,
   CloudPort,
   DefaultKey,
-  DefaultConfig,
   SocketEventType,
   ServerMessageType,
   PeerEventType,

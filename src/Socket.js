@@ -24,9 +24,7 @@ class Socket extends EventEmitter {
 
     const wsUrl = `${this._baseUrl}&id=${id}&token=${token}`;
 
-    if (this._socket || !this._disconnected) {
-      return;
-    }
+    if (this._socket || !this._disconnected) return;
 
     this._socket = new this._WebSocket(wsUrl);
     this._disconnected = false;
@@ -36,9 +34,11 @@ class Socket extends EventEmitter {
 
       try {
         data = JSON.parse(event.data);
-        console.debug('Server message received:', data);
       } catch (e) {
-        console.debug('Invalid server message', event.data);
+        this.emit(SocketEventType.Error, {
+          type: 'invalid-message',
+          data: event.data,
+        });
         return;
       }
 
@@ -50,8 +50,6 @@ class Socket extends EventEmitter {
         return;
       }
 
-      console.debug('Socket closed.', event);
-
       this._cleanup();
       this._disconnected = true;
 
@@ -60,17 +58,11 @@ class Socket extends EventEmitter {
 
     // Take care of the queue of connections if necessary and make sure Peer knows
     // socket is open.
-    this._socket.onopen = () => {
-      if (this._disconnected) {
-        return;
-      }
-
+    this._socket.on('open', () => {
+      if (this._disconnected) return;
       this._sendQueuedMessages();
-
-      console.debug('Socket open');
-
       this._scheduleHeartbeat();
-    };
+    });
   }
 
   _scheduleHeartbeat() {
@@ -81,14 +73,12 @@ class Socket extends EventEmitter {
 
   _sendHeartbeat() {
     if (!this._wsOpen()) {
-      console.debug(`Cannot send heartbeat, because socket closed`);
       return;
     }
 
     const message = JSON.stringify({ type: ServerMessageType.Heartbeat });
 
     this._socket.send(message);
-
     this._scheduleHeartbeat();
   }
 
@@ -111,10 +101,6 @@ class Socket extends EventEmitter {
 
   /** Exposed send for DC & Peer. */
   send(data) {
-    if (this._disconnected) {
-      return;
-    }
-
     // If we didn't get an ID yet, we can't yet send anything so we should queue
     // up these messages.
     if (!this._id) {
@@ -122,14 +108,14 @@ class Socket extends EventEmitter {
       return;
     }
 
+    if (this._disconnected) return;
+
     if (!data.type) {
       this.emit(SocketEventType.Error, 'Invalid message');
       return;
     }
 
-    if (!this._wsOpen()) {
-      return;
-    }
+    if (!this._wsOpen()) return;
 
     const message = JSON.stringify(data);
 
@@ -137,12 +123,9 @@ class Socket extends EventEmitter {
   }
 
   close() {
-    if (this._disconnected) {
-      return;
-    }
+    if (this._disconnected) return;
 
     this._cleanup();
-
     this._disconnected = true;
   }
 
