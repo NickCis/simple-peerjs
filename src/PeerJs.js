@@ -154,19 +154,9 @@ class PeerJs extends EventEmitter {
         );
         break;
       case ServerMessageType.Offer:
-        this.emit(PeerEventType.Offer, {
-          peer: peerId,
-          signal: payload,
-        });
-        break;
       case ServerMessageType.Answer:
-        this.emit(PeerEventType.Answer, {
-          peer: peerId,
-          signal: payload,
-        });
-        break;
       case ServerMessageType.Candidate:
-        this.emit(PeerEventType.Candidate, {
+        this.emit(PeerEventType.Signal, {
           peer: peerId,
           signal: payload,
         });

@@ -29,9 +29,7 @@ const PeerEventType = {
   Call: 'call',
   Disconnected: 'disconnected',
   Error: 'error',
-  Offer: 'offer',
-  Answer: 'answer',
-  Candidate: 'candidate',
+  Signal: 'signal',
 };
 
 const PeerErrorType = {
