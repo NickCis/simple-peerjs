@@ -9,6 +9,9 @@
   "scripts": {
     "format": "prettier --write 'src/**/*.js'"
   },
+  "files": [
+    "src"
+  ],
   "dependencies": {
     "eventemitter3": "^4.0.7",
     "simple-peer": "^9.7.2"
