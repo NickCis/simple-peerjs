@@ -51,13 +51,21 @@ class ConnectionManager extends EventEmitter {
       }),
     };
 
+    let connected = false;
+
     conn.peer.on('signal', data => {
       this.signaler.signal(peerId, data, id);
     });
 
     conn.peer.on('connect', () => {
+      connected = true;
       this.emit('connect', conn);
       if (conn.resolve) conn.resolve(conn);
+    });
+
+    conn.peer.on('error', error => {
+      if (connected) return;
+      if (conn.reject) conn.reject(error);
     });
 
     return conn;
