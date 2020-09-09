@@ -2,10 +2,10 @@ const fetch = require('node-fetch');
 const WebSocket = require('ws');
 const Peer = require('simple-peer');
 const wrtc = require('wrtc');
-const ConnectionManager = require('../../src/ConnectionManager');
+const SimplePeerJs = require('../../src');
 
 async function main() {
-  const connectionManager = new ConnectionManager({ fetch, WebSocket, wrtc });
+  const connectionManager = new SimplePeerJs({ fetch, WebSocket, wrtc });
   const peerId = await connectionManager.id;
   console.log('My peer id:', peerId);
 
@@ -13,7 +13,7 @@ async function main() {
     console.log('Peer connected:', conn.peerId);
     conn.peer.on('data', data => {
       console.log('Received data ::', data.toString());
-      peer.send('Fineee :)');
+      conn.peer.send('Fineee :)');
     });
   });
 }

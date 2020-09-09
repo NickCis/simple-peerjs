@@ -2,11 +2,15 @@ const fetch = require('node-fetch');
 const WebSocket = require('ws');
 const Peer = require('simple-peer');
 const wrtc = require('wrtc');
-const ConnectionManager = require('../../src/ConnectionManager');
+const SimplePeerJs = require('../../src');
 
 async function main() {
   const peerId = process.argv[2];
-  const connectionManager = new ConnectionManager({ fetch, WebSocket, wrtc });
+  if (!peerId) {
+    consoele.log('Please pass the peerId');
+    process.exit(-1);
+  }
+  const connectionManager = new SimplePeerJs({ fetch, WebSocket, wrtc });
   const conn = await connectionManager.connect(peerId);
 
   console.log('Connected to peer!');

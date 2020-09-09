@@ -165,7 +165,7 @@ class Signaler extends EventEmitter {
       case ServerMessageType.Answer:
       case ServerMessageType.Candidate:
         this.emit(PeerEventType.Signal, {
-          peer: peerId,
+          peerId,
           signal: payload.signal,
           id: payload.id,
         });

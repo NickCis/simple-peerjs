@@ -14,17 +14,11 @@ class ConnectionManager extends EventEmitter {
       this.signaler.on(PeerEventType.Open, rs);
     });
 
-    this.signaler.on(PeerEventType.Signal, ({ peer: peerId, id, signal }) => {
-      let conn = this.connections[id];
+    this.signaler.on(PeerEventType.Signal, ({ peerId, id, signal }) => {
+      if (!this.connections[id])
+        this.connections[id] = this.createPeer(id, peerId);
 
-      if (!peer) {
-        conn.peer = this.connections[id] = this.createPeer(id, peerId);
-        conn.peer.on('connect', () => {
-          this.emit('connect', conn);
-        });
-      }
-
-      conn.peer.signal(signal);
+      this.connections[id].peer.signal(signal);
     });
 
     this.signaler.on(PeerEventType.Error, error => {
@@ -47,7 +41,7 @@ class ConnectionManager extends EventEmitter {
   }
 
   createPeer(id, peerId, opts, extra) {
-    return {
+    const conn = {
       ...extra,
       id,
       peerId,
@@ -56,6 +50,17 @@ class ConnectionManager extends EventEmitter {
         wrtc: this.options.wrtc,
       }),
     };
+
+    conn.peer.on('signal', data => {
+      this.signaler.signal(peerId, data, id);
+    });
+
+    conn.peer.on('connect', () => {
+      this.emit('connect', conn);
+      if (conn.resolve) conn.resolve(conn);
+    });
+
+    return conn;
   }
 
   connect(peerId, opts) {
@@ -63,26 +68,15 @@ class ConnectionManager extends EventEmitter {
       // TODO: manage couldn't connect messages!
       // TODO: managed disconnected
       const connectionId = randomToken();
-      const conn = (this.connections[connectionId] = this.createPeer(
+      this.connections[connectionId] = this.createPeer(
         connectionId,
         peerId,
         {
           ...opts,
           initiator: true,
         },
-        { reject: rj }
-      ));
-      const handlePeerSignal = data => {
-        this.signaler.signal(peerId, data, connectionId);
-      };
-      const handleConnect = () => {
-        conn.peer.removeListener('signal', handlePeerSignal);
-        conn.peer.removeListener('connect', handleConnect);
-        rs(conn);
-      };
-
-      conn.peer.on('signal', handlePeerSignal);
-      conn.peer.on('connect', handleConnect);
+        { reject: rj, resolve: rs }
+      );
     });
   }
 }
