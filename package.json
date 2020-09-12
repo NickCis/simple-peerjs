@@ -1,6 +1,6 @@
 {
   "name": "simple-peerjs",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Simple peer-to-peer with WebRTC (peerjs singal exchange with simple-peer library)",
   "main": "src/index.js",
   "repository": "https://github.com/nickcis/simple-peerjs",
