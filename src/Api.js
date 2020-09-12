@@ -3,7 +3,7 @@ const { CloudHost } = require('./constants');
 class Api {
   constructor(_options = {}) {
     this._options = _options;
-    this._fetch = this._options.fetch || fetch;
+    this._fetch = this._options.fetch || fetch.bind(window);
   }
 
   _buildUrl(method) {

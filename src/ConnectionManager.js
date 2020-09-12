@@ -2,16 +2,25 @@ const { EventEmitter } = require('eventemitter3');
 const Peer = require('simple-peer');
 const Signaler = require('./Signaler');
 const { randomToken } = require('./util');
-const { PeerEventType, PeerErrorType } = require('./constants');
+const { PeerEventType, PeerErrorType, IceServers } = require('./constants');
 
 class ConnectionManager extends EventEmitter {
   constructor(opts) {
     super();
-    this.options = opts;
+    this.options = {
+      ...opts,
+      simplePeer: {
+        ...(opts && opts.simplePeer),
+        config: {
+          iceServers: IceServers,
+          ...(opts && opts.simplePeer && opts.simplePeer.config),
+        },
+      },
+    };
     this.connections = {};
-    this.signaler = new Signaler(opts);
+    this.signaler = new Signaler(this.options);
     this.id = new Promise(rs => {
-      this.signaler.on(PeerEventType.Open, rs);
+      this.signaler.once(PeerEventType.Open, rs);
     });
 
     this.signaler.on(PeerEventType.Signal, ({ peerId, id, signal }) => {
@@ -46,8 +55,9 @@ class ConnectionManager extends EventEmitter {
       id,
       peerId,
       peer: new Peer({
-        ...opts,
         wrtc: this.options.wrtc,
+        ...this.options.simplePeer,
+        ...opts,
       }),
     };
 
@@ -73,8 +83,6 @@ class ConnectionManager extends EventEmitter {
 
   connect(peerId, opts) {
     return new Promise((rs, rj) => {
-      // TODO: manage couldn't connect messages!
-      // TODO: managed disconnected
       const connectionId = randomToken();
       this.connections[connectionId] = this.createPeer(
         connectionId,

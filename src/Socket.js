@@ -58,11 +58,11 @@ class Socket extends EventEmitter {
 
     // Take care of the queue of connections if necessary and make sure Peer knows
     // socket is open.
-    this._socket.on('open', () => {
+    this._socket.onopen = () => {
       if (this._disconnected) return;
       this._sendQueuedMessages();
       this._scheduleHeartbeat();
-    });
+    };
   }
 
   _scheduleHeartbeat() {

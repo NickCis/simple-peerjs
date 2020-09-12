@@ -29,20 +29,13 @@ class Signaler extends EventEmitter {
     return this._socket;
   }
 
-  constructor(id, options) {
+  constructor(options) {
     super();
     this._destroyed = false; // Connections have been killed
     this._disconnected = false; // Connection to PeerServer killed but P2P connections still active
     this._open = false; // Sockets and such are not yet open.
 
-    let userId;
-
-    // Deal with overloading
-    if (id && id.constructor == Object) {
-      options = id;
-    } else if (id) {
-      userId = id.toString();
-    }
+    let userId = options && options.id;
 
     options = {
       host: CloudHost,

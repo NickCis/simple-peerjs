@@ -2,6 +2,12 @@ const CloudHost = '0.peerjs.com';
 const CloudPort = 443;
 const DefaultKey = 'peerjs';
 
+const IceServers = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:global.stun.twilio.com:3478' },
+  { urls: 'turn:0.peerjs.com:3478', username: 'peerjs', credential: 'peerjsp' },
+];
+
 const SocketEventType = {
   Message: 'message',
   Disconnected: 'disconnected',
