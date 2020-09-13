@@ -95,6 +95,17 @@ class ConnectionManager extends EventEmitter {
       );
     });
   }
+
+  close() {
+    this.signaler.disconnect();
+
+    for (const id of Object.keys(this.connections)) {
+      const conn = this.connections[id];
+      conn.peer.destroy();
+    }
+
+    this.connections = {};
+  }
 }
 
 module.exports = ConnectionManager;

@@ -168,6 +168,10 @@ Tries to connect to `peerId`. Returns a promise with an object that has a simple
 
 The second parameter, `opts`, is optional. If passed, it will be used as the simple-peer configuration.
 
+### `peer.close()`
+
+Closes Signaling connection to PeerJS and all active peer connections.
+
 ## Events
 
 SimplePeerJs objects are instances of `EventEmitter`.
