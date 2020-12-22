@@ -41,7 +41,7 @@ conn.peer.send('hi!');
 **Receive**
 
 ```js
-connMan.on('connection', conn => {
+connMan.on('connect', conn => {
   console.log('Peer connected:', conn.peerId);
 
   // conn.peer is an instance of simple-peer
@@ -63,7 +63,7 @@ const SimplePeerJs = require('simple-peerjs');
 async function main() {
   const peer = new SimplePeerJs();
 
-  peer.on('connection', connection => {
+  peer.on('connect', connection => {
     connection.peer.on('stream', stream => {
       // got remote video stream, now let's show it in a video tag
       const video = document.querySelector('video');
@@ -96,7 +96,7 @@ const SimplePeerJs = require('simple-peerjs');
 async function main() {
   const peer = new SimplePeerJs();
 
-  peer.on('connection', connection => {
+  peer.on('connect', connection => {
     connection.peer.on('stream', stream => {
       // got remote video stream, now let's show it in a video tag
       const video = document.querySelector('video');
